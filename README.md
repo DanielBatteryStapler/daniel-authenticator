@@ -19,7 +19,7 @@ The easiest way to use is as a docker container, it is available on dockerhub as
 ``danielbatterystapler/daniel-authenticator:latest``. An example ``docker-compose.yml`` file is available
 in the repo.
 
-In declarative database more you can setup all users, services, and groups w or use normal databse mode with the CLI interface to
+In declarative database mode you can setup all users, services, and groups within an environment variable or you can use normal databse mode with the CLI interface to
 create the initial admin user and use that account for user management.
 The example file uses a declarative database.
 
