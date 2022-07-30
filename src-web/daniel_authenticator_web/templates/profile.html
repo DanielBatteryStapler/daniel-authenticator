@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block title %}My Profile{% endblock %}
+{% block content %}
+	<p>
+		My Profile
+	</p>
+	<table>
+		<tbody>
+			<tr>
+				<th>
+					Username
+				</th>
+				<td>
+					{{ user_info["username"] }}
+				</td>
+			</tr>
+			<tr>
+				<th>
+					Fullname
+				</th>
+				<td>
+					{{ user_info["fullname"] }}
+				</td>
+			</tr>
+			<tr>
+				<th>
+					E-mail
+				</th>
+				<td>
+					{{ user_info["email"] }}
+				</td>
+			</tr>
+			<tr>
+				<th>
+					Change Password
+				</th>
+				<td>
+					<form method="POST" action="{{ url_for('set_password_post_route') }}">
+						<input type="password" name="password" placeholder="Password"><br>
+						<input type="password" name="repeat_password" placeholder="Repeat Password">
+						<input type="submit" value="Change">
+						<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+					</form>
+				</td>
+			</tr>
+			<tr>
+				<th>
+					My Services
+				</th>
+				<td>
+				</td>
+			</tr>
+			{% for service in service_memberships %}
+				<tr>
+					<td>
+					</td>
+					<td>
+						{% if service['hyperlink'] == "" %}
+							{{ service["fullname"] }}
+						{% else %}
+							<a href="{{service['hyperlink']}}">{{ service["fullname"] }}</a>
+						{% endif %}
+					</td>
+				</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+{% endblock %}

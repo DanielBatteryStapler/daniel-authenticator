@@ -1,0 +1,298 @@
+{% extends "base.html" %}
+{% block title %}Overview{% endblock %}
+{% block content %}
+	<h1>
+		Membership Matrix
+	</h1>
+	<table id='membershipMatrix'>
+		<tbody>
+			<tr>
+				<td>
+					
+				</td>
+				<th class='top'>
+					SERVICES
+				</th>
+				{% for service in services %}
+					<td class='top {{ "" if service["active"] else "inactive" }}'>
+						<div class='rotate'>
+							<div class='rotateInner'>
+								<a href='{{ url_for("service_route", service_id=service["service_id"]) }}'>
+									{{ service['username'] }}
+								</a>
+							</div>
+						</div>
+					</td>
+				{% endfor %}
+				<th class='top'>
+					GROUPS
+				</th>
+				{% for group in groups %}
+					<td class='top'>
+						<div class='rotate'>
+							<div class='rotateInner'>
+								{{ group['username'] }}
+							</div>
+						</div>
+					</td>
+				{% endfor %}
+			</tr>
+			<tr>
+				<th class='left'>
+					USERS
+				</th>
+				<td class='spacer'></td>
+				{% for service in services %}
+					<td class='spacer'></td>
+				{% endfor %}
+				<td class='spacer'></td>
+				{% for group in groups %}
+					<td class='spacer'></td>
+				{% endfor %}
+			</tr>
+			{% for user in users %}
+				<tr>
+					<td class='left {{ "" if user["active"] else "inactive" }}'>
+						<a href='{{ url_for("user_route", user_id=user["user_id"]) }}'>
+							{{ user['username'] }}
+						</a>
+					</td>
+					<td class='spacer'></td>
+					{% for service in user['service_matrix'] %}
+						{% if service %}
+							<td class='active'></td>
+						{% else %}
+							<td></td>
+						{% endif %}
+					{% endfor %}
+					<td class='spacer'></td>
+					{% for group in user['group_matrix'] %}
+						{% if group %}
+							<td class='active'></td>
+						{% else %}
+							<td></td>
+						{% endif %}
+					{% endfor %}
+				</tr>
+			{% endfor %}
+			<tr>
+				<th class='left'>
+					GROUPS
+				</th>
+				<td class='spacer'></td>
+				{% for service in services %}
+					<td class='spacer'></td>
+				{% endfor %}
+				<td class='spacer'></td>
+				{% for group in groups %}
+					<td class='spacer'></td>
+				{% endfor %}
+			</tr>
+			{% for group in groups %}
+				<tr>
+					<td class='left'>
+						<a href='{{ url_for("group_route", group_id=group["group_id"]) }}'>
+							{{ group['username'] }}
+						</a>
+					</td>
+					<td class='spacer'></td>
+					{% for service in group['service_matrix'] %}
+						{% if service %}
+							<td class='active'></td>
+						{% else %}
+							<td></td>
+						{% endif %}
+					{% endfor %}
+					<td class='spacer'></td>
+					{% for groupb in groups %}
+						<td class='ignore'></td>
+					{% endfor %}
+				</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+	
+	
+	<h1>
+		Users
+	</h1>
+	<table class='userTable'>
+		<tbody>
+			<tr>
+				<th>
+					Username
+				</th>
+				<th>
+					Fullname
+				</th>
+				<th>
+					E-mail
+				</th>
+				<th>
+					UUID
+				</th>
+				<th>
+					Active
+				</th>
+				<th>
+					Locked
+				</th>
+				<th>
+					Superuser
+				</th>
+			</tr>
+			{% for user in users %}
+				<tr>
+					<td>
+						<a href='{{ url_for("user_route", user_id=user["user_id"]) }}'>
+							{{ user['username'] }}
+						</a>
+					</td>
+					<td>
+						{{ user['fullname'] }}
+					</td>
+					<td>
+						{{ user['email'] }}
+					</td>
+					<td>
+						{{ user['uuid'] }}
+					</td>
+					<td>
+						{{ user['active'] }}
+					</td>
+					<td>
+						{{ user['locked'] }}
+					</td>
+					<td>
+						{{ user['superuser'] }}
+					</td>
+				</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+	<div class="collapsible">
+		<label for="collapsible-checkbox-user-new">
+			New User
+		</label>
+		<input type="checkbox" id="collapsible-checkbox-user-new">
+		<div>
+			<form method="POST" action="{{ url_for('new_user_post_route') }}">
+				<input type="text" name="username" placeholder="Username"><br>
+				<input type="text" name="fullname" placeholder="Fullname"><br>
+				<input type="text" name="email" placeholder="Email"><br>
+				<input type="password" name="password" placeholder="Password"><br>
+				<input type="password" name="repeat_password" placeholder="Repeat Password"><br>
+				<input type="submit" value="Create User">
+				<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+			</form>
+		</div>
+	</div>
+	
+	
+	<h1>
+		Groups
+	</h1>
+	<table class='userTable'>
+		<tbody>
+			<tr>
+				<th>
+					Username
+				</th>
+				<th>
+					Fullname
+				</th>
+				<th>
+					UUID
+				</th>
+			</tr>
+			{% for group in groups %}
+				<tr>
+					<td>
+						<a href='{{ url_for("group_route", group_id=group["group_id"]) }}'>
+							{{ group['username'] }}
+						</a>
+					</td>
+					<td>
+						{{ group['fullname'] }}
+					</td>
+					<td>
+						{{ group['uuid'] }}
+					</td>
+				</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+	<div class="collapsible">
+		<label for="collapsible-checkbox-group-new">
+			New Group
+		</label>
+		<input type="checkbox" id="collapsible-checkbox-group-new">
+		<div>
+			<form method="POST" action="{{ url_for('new_group_post_route') }}">
+				<input type="text" name="username" placeholder="Username"><br>
+				<input type="text" name="fullname" placeholder="Fullname"><br>
+				<input type="submit" value="Create Group">
+				<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+			</form>
+		</div>
+	</div>
+	
+	
+	<h1>
+		Services
+	</h1>
+	<table class='userTable'>
+		<tbody>
+			<tr>
+				<th>
+					Username
+				</th>
+				<th>
+					Fullname
+				</th>
+				<th>
+					Hyperlink
+				</th>
+				<th>
+					Active
+				</th>
+			</tr>
+			{% for service in services %}
+				<tr>
+					<td>
+						<a href='{{ url_for("service_route", service_id=service["service_id"]) }}'>
+							{{ service['username'] }}
+						</a>
+					</td>
+					<td>
+						{{ service['fullname'] }}
+					</td>
+					<td>
+						{{ service['hyperlink'] }}
+					</td>
+					<td>
+						{{ service['active'] }}
+					</td>
+				</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+	<div class="collapsible">
+		<label for="collapsible-checkbox-service-new">
+			New Service
+		</label>
+		<input type="checkbox" id="collapsible-checkbox-service-new">
+		<div>
+			<form method="POST" action="{{ url_for('new_service_post_route') }}">
+				<input type="text" name="username" placeholder="Username"><br>
+				<input type="text" name="fullname" placeholder="Fullname"><br>
+				<input type="text" name="hyperlink" placeholder="Hyperlink"><br>
+				<input type="password" name="password" placeholder="Password"><br>
+				<input type="password" name="repeat_password" placeholder="Repeat Password"><br>
+				<input type="submit" value="Create Service">
+				<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+			</form>
+		</div>
+	</div>
+	
+{% endblock %}

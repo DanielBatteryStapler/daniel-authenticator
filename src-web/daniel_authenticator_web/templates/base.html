@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+
+<html lang="en">
+	<!--<a href="{{ url_for('overview_route') }}" style="text-decoration: none" class="topLeftTitle">Hello!!</a>-->
+
+	<head>
+	  <meta charset="UTF-8">
+	  <title>Daniel Authenticator - {% block title %}{% endblock %}</title>
+	  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+	  <meta name='viewport' content='width=device-width, maximum-scale=1, minimum-scale=1, initial-scale=1'>
+	</head>
+
+	<body>
+		<div id='Header'>
+			<div id='HeaderMenu'>
+			{% if is_logged_in(user_info) %}
+				<form class="normalLink" method="POST" action="{{ url_for('logout_post_route') }}">
+					Welcome, <a href='{{ url_for("profile_route") }}'>{{ user_info['username'] }}</a>! <input type="submit" value="log out">
+					<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+				</form>
+			{% else %}
+				Please <a href='{{ url_for("login_route") }}'>log in</a>
+			{% endif %}
+			</div>
+			<div id='HeaderText'>
+				<a href="{{ url_for('index_route') }}">
+					Daniel Authenticator
+				</a>
+			</div>
+		</div>
+		<div id='ContentWrapper'>
+			<div id='Content'>
+			 	{% block content %} {% endblock %}
+			</div>
+		</div>
+		<div id='FooterWrapper'>
+			<div id='Footer'>
+				<p>
+					Program by Daniel Karagory
+				</p>
+				<p>
+					<a href='https://github.com/DanielBatteryStapler/DanielAuthenticator'>Code is on Github</a>, Licensed under the AGPL
+				</p>
+			</div>
+		</div>
+	</body>
+</html>
+ 

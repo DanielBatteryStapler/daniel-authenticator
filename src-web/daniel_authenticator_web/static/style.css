@@ -1,0 +1,169 @@
+
+html{
+	min-height: 100vh;
+}
+
+body{
+	min-height: 100vh;
+	padding: 0;
+	margin: 0;
+	display: flex;
+	flex-direction: column;
+	
+	background-color: #f0f0f0;
+	font-family: sans-serif;
+}
+
+#Header{
+	background-color: #31aff5;
+	box-shadow: 0px 2px 3px grey;
+}
+
+#HeaderText{
+	padding-top: 5px;
+	padding-right: 2rem;
+	padding-bottom: 5rem;
+	padding-left: 2.5%;
+	font-size: 3rem;
+	color: #ffffff;
+}
+
+#HeaderText a{
+	color: #ffffff;
+}
+
+#HeaderMenu{
+	float: right;
+	padding: 0.5rem;
+	
+	background-color: #ffffff;
+	box-shadow: 1px 1px 2px grey, -1px -1px 2px grey, -1px 1px 2px grey, 1px -1px 2px grey;
+}
+
+#ContentWrapper{
+	flex: 1 0 auto;
+}
+
+
+#Content{
+	display: table;
+	margin-top: -3rem;		
+	margin-left: auto;
+	margin-right: auto;
+	padding: 0 2rem 2rem 2rem;
+	
+	background-color: #ffffff;
+	box-shadow: 1px 1px 2px grey, -1px -1px 2px grey, -1px 1px 2px grey, 1px -1px 2px grey;
+}
+
+#FooterWrapper{
+	
+}
+
+#Footer{
+	padding: 0.5rem;
+}
+
+.form{
+	text-align: center;
+}
+
+.form form{
+}
+
+.form input{
+	padding: 0.5rem;
+}
+
+#membershipMatrix{
+	border-collapse: collapse;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+.userTable{
+	margin-left: auto;
+	margin-right: auto;
+}
+
+#membershipMatrix .top{
+	writing-mode: vertical-rl;
+	text-orientation: mixed;
+	vertical-align: top;
+	transform: rotate(180deg);
+}
+
+#membershipMatrix .left{
+	text-align: right;
+}
+
+#membershipMatrix td{
+	background-color: white;
+	width: 1.25rem;
+}
+
+#membershipMatrix .inactive a{
+	color: #999999;
+}
+
+td, th{
+	margin: 0;
+	padding: 0.1rem;
+	border-width: 0px;
+}
+
+#membershipMatrix .active{
+	background-color: darkgreen;
+}
+
+#membershipMatrix .ignore{
+	background-color: lightgray;
+}
+
+#membershipMatrix .spacer{
+	background-color: lightgray;
+}
+
+.normalLink input{
+	background: none!important;
+	border: none;
+	padding: 0!important;
+	font-family: sans-serif;
+	font-size: inherit;
+	text-decoration: underline;
+	cursor: pointer;
+}
+
+a{
+	color: black;
+}
+
+table form{
+	display: inline;
+}
+
+.collapsible{
+	border-width: 0 0 0 2px;
+	border-style: solid;
+	border-color: black;
+	margin: 0.5rem;
+	padding: 0.5rem;
+}
+
+.collapsible>label{
+	cursor: pointer;
+	text-decoration: underline;
+}
+
+.collapsible>input{
+	display: none;
+}
+
+.collapsible>div{
+	display: none;
+}
+
+.collapsible>input:checked+div{
+	display: block;
+}
+

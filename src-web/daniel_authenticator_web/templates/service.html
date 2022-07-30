@@ -1,0 +1,266 @@
+{% extends "base.html" %}
+{% block title %}Service Profile{% endblock %}
+{% block content %}
+	<p>
+		Service Profile
+	</p>
+	<table>
+		<tbody>
+			<tr>
+				<th>
+					Username
+				</th>
+				<td>
+					{{ target_service_info["username"] }}
+				</td>
+			</tr>
+			<tr>
+				<th>
+					Fullname
+				</th>
+				<td>
+					{{ target_service_info["fullname"] }}
+				</td>
+				<td>
+					<form method="POST" action="{{ url_for('set_service_fullname_post_route') }}">
+						<input type="text" name="fullname" placeholder="Fullname">
+						<input type="hidden" name="service_id" value="{{ target_service_info['service_id'] }}">
+						<input type="submit" value="Set">
+						<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+					</form>
+				</td>
+			</tr>
+			<tr>
+				<th>
+					Hyperlink
+				</th>
+				<td>
+					{{ target_service_info["hyperlink"] }}
+				</td>
+				<td>
+					<form method="POST" action="{{ url_for('set_service_hyperlink_post_route') }}">
+						<input type="text" name="hyperlink" placeholder="Hyperlink">
+						<input type="hidden" name="service_id" value="{{ target_service_info['service_id'] }}">
+						<input type="submit" value="Set">
+						<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+					</form>
+				</td>
+			</tr>
+			<tr>
+				<th>
+					Password
+				</th>
+				<td>
+					***********
+				</td>
+				<td>
+					<form method="POST" action="{{ url_for('set_service_password_post_route') }}">
+						<input type="password" name="password" placeholder="Password"><br>
+						<input type="password" name="repeat_password" placeholder="Repeat Password">
+						<input type="hidden" name="service_id" value="{{ target_service_info['service_id'] }}">
+						<input type="submit" value="Set">
+						<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+					</form>
+				</td>
+			</tr>
+			<tr>
+				<th>
+					Active
+				</th>
+				<td>
+					{% if target_service_info["active"] == 1 %}
+						true
+					{% else %}
+						false
+					{% endif %}
+				</td>
+				<td>
+					<form method="POST" action="{{ url_for('set_service_active_post_route') }}">
+						{% if target_service_info["active"] == 1 %}
+							<input type="hidden" name="active" value="false">
+							<input type="submit" value="Deactivate">
+						{% else %}
+							<input type="hidden" name="active" value="true">
+							<input type="submit" value="Activate">
+						{% endif %}
+						<input type="hidden" name="service_id" value="{{ target_service_info['service_id'] }}">
+						<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+					</form>
+				</td>
+			</tr>
+			<tr>
+				<th>
+					Users
+				</th>
+				<td>
+				</td>
+			</tr>
+			{% for user in user_memberships %}
+				<tr>
+					<td>
+					</td>
+					<td>
+						<a href="{{ url_for('user_route', user_id=user['user_id']) }}">{{ user["username"] }}</a>
+					</td>
+					<td>
+						<form method="POST" action="{{ url_for('remove_user_from_service_post_route') }}">
+							<input type="hidden" name="user_id" value="{{ user['user_id'] }}">
+							<input type="hidden" name="service_id" value="{{ target_service_info['service_id'] }}">
+							<input type="hidden" name="next_url" value="{{ url_for('service_route', service_id=target_service_info['service_id']) }}">
+							<input type="submit" value="Remove">
+							<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+						</form>
+					</td>
+				</tr>
+			{% endfor %}
+			{% for user in users %}
+				{% if user not in user_memberships %}
+					<tr>
+						<td>
+						</td>
+						<td>
+							<a href="{{ url_for('user_route', user_id=user['user_id']) }}">{{ user["username"] }}</a>
+						</td>
+						<td>
+							<form method="POST" action="{{ url_for('add_user_to_service_post_route') }}">
+								<input type="hidden" name="user_id" value="{{ user['user_id'] }}">
+								<input type="hidden" name="service_id" value="{{ target_service_info['service_id'] }}">
+								<input type="hidden" name="next_url" value="{{ url_for('service_route', service_id=target_service_info['service_id']) }}">
+								<input type="submit" value="Add">
+								<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+							</form>
+						</td>
+					</tr>
+				{% endif %}
+			{% endfor %}
+			<tr>
+				<th>
+					Groups
+				</th>
+				<td>
+				</td>
+			</tr>
+			{% for group in group_memberships %}
+				<tr>
+					<td>
+					</td>
+					<td>
+						<a href="{{ url_for('group_route', group_id=group['group_id']) }}">{{ group["username"] }}</a>
+					</td>
+					<td>
+						<form method="POST" action="{{ url_for('remove_group_from_service_post_route') }}">
+							<input type="hidden" name="group_id" value="{{ group['group_id'] }}">
+							<input type="hidden" name="service_id" value="{{ target_service_info['service_id'] }}">
+							<input type="hidden" name="next_url" value="{{ url_for('service_route', service_id=target_service_info['service_id']) }}">
+							<input type="submit" value="Remove">
+							<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+						</form>
+					</td>
+				</tr>
+			{% endfor %}
+			{% for group in groups %}
+				{% if group not in group_memberships %}
+					<tr>
+						<td>
+						</td>
+						<td>
+							<a href="{{ url_for('group_route', group_id=group['group_id']) }}">{{ group["username"] }}</a>
+						</td>
+						<td>
+							<form method="POST" action="{{ url_for('add_group_to_service_post_route') }}">
+								<input type="hidden" name="group_id" value="{{ group['group_id'] }}">
+								<input type="hidden" name="service_id" value="{{ target_service_info['service_id'] }}">
+								<input type="hidden" name="next_url" value="{{ url_for('service_route', service_id=target_service_info['service_id']) }}">
+								<input type="submit" value="Add">
+								<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+							</form>
+						</td>
+					</tr>
+				{% endif %}
+			{% endfor %}
+			<tr>
+				<th>
+					LDAP Information
+				</th>
+			</tr>
+			<tr>
+				<th>
+					LDAP Port
+				</th>
+				<td>
+					3389
+				</td>
+			</tr>
+			<tr>
+				<th>
+					LDAPS Port
+				</th>
+				<td>
+					6636
+				</td>
+			</tr>
+			<tr>
+				<th>
+					Search User Bind DN
+				</th>
+				<td>
+					ou={{ target_service_info['username'] }},ou=services,dc=daniel-authenticator
+				</td>
+			</tr>
+			<tr>
+				<th>
+					User Base DN
+				</th>
+				<td>
+					ou=users,ou={{ target_service_info['username'] }},ou=services,dc=daniel-authenticator
+				</td>
+			</tr>
+			<tr>
+				<th>
+					User Bind DN
+				</th>
+				<td>
+					uid=$USERNAME,ou=users,ou={{ target_service_info['username'] }},ou=services,dc=daniel-authenticator
+				</td>
+			</tr>
+			<tr>
+				<th>
+					User Filter
+				</th>
+				<td>
+					(objectClass=user)
+				</td>
+			</tr>
+			<tr>
+				<th>
+					Group Base DN
+				</th>
+				<td>
+					ou=groups,ou={{ target_service_info['username'] }},ou=services,dc=daniel-authenticator
+				</td>
+			</tr>
+			<tr>
+				<th>
+					Group Filter
+				</th>
+				<td>
+					(objectClass=group)
+				</td>
+			</tr>
+		</tbody>
+	</table>
+	<div class="collapsible">
+		<label for="collapsible-checkbox-service-{{ target_service_info['service_id'] }}">
+			Delete Service
+		</label>
+		<input type="checkbox" id="collapsible-checkbox-service-{{ target_service_info['service_id'] }}">
+		<div>
+			Are you sure? This cannot be undone.
+			<form method="POST" action="{{ url_for('delete_service_post_route') }}">
+				<input type="hidden" name="service_id" value="{{ target_service_info['service_id'] }}">
+				<input type="submit" value="Delete Service">
+				<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+			</form>
+		</div>
+	</div>
+{% endblock %}

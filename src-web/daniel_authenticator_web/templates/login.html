@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Login{% endblock %}
+{% block content %}
+	<div class="form">
+		<p>
+			LOGIN
+		</p>
+		<form method="POST" action="{{ url_for('login_post_route') }}">
+			<input type="text" autocorrect="off" autocapitalize="none" name="username" placeholder="Username"><br>
+			<input type="password" name="password" placeholder="Password"><br>
+			<input type="submit" value="Log in">
+			<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+		</form>
+		<p>
+			{{ status }}
+		</p>
+	</div>
+{% endblock %}

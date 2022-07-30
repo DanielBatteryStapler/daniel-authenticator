@@ -1,0 +1,267 @@
+{% extends "base.html" %}
+{% block title %}User Profile{% endblock %}
+{% block content %}
+	<p>
+		User Profile
+	</p>
+	<table>
+		<tbody>
+			<tr>
+				<th>
+					Username
+				</th>
+				<td>
+					{{ target_user_info["username"] }}
+				</td>
+			</tr>
+			<tr>
+				<th>
+					Fullname
+				</th>
+				<td>
+					{{ target_user_info["fullname"] }}
+				</td>
+				<td>
+					<form method="POST" action="{{ url_for('set_user_fullname_post_route') }}">
+						<input type="text" name="fullname" placeholder="Fullname">
+						<input type="hidden" name="user_id" value="{{ target_user_info['user_id'] }}">
+						<input type="submit" value="Set">
+						<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+					</form>
+				</td>
+			</tr>
+			<tr>
+				<th>
+					E-mail
+				</th>
+				<td>
+					{{ target_user_info["email"] }}
+				</td>
+				<td>
+					<form method="POST" action="{{ url_for('set_user_email_post_route') }}">
+						<input type="text" name="email" placeholder="Email">
+						<input type="hidden" name="user_id" value="{{ target_user_info['user_id'] }}">
+						<input type="submit" value="Set">
+						<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+					</form>
+				</td>
+			</tr>
+			<tr>
+				<th>
+					UUID
+				</th>
+				<td>
+					{{ target_user_info["uuid"] }}
+				</td>
+			</tr>
+			<tr>
+				<th>
+					Last Login
+				</th>
+				<td>
+					{{ target_user_info["last_login_time"] }}
+				</td>
+			</tr>
+			<tr>
+				<th>
+					Created
+				</th>
+				<td>
+					{{ target_user_info["creation_time"] }}
+				</td>
+			</tr>
+			<tr>
+				<th>
+					Password
+				</th>
+				<td>
+					***********
+				</td>
+				<td>
+					<form method="POST" action="{{ url_for('set_user_password_post_route') }}">
+						<input type="password" name="password" placeholder="Password"><br>
+						<input type="password" name="repeat_password" placeholder="Repeat Password">
+						<input type="hidden" name="user_id" value="{{ target_user_info['user_id'] }}">
+						<input type="submit" value="Set">
+						<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+					</form>
+				</td>
+			</tr>
+			<tr>
+				<th>
+					Superuser
+				</th>
+				<td>
+					{% if target_user_info["superuser"] == 1 %}
+						true
+					{% else %}
+						false
+					{% endif %}
+				</td>
+				<td>
+					<form method="POST" action="{{ url_for('set_user_superuser_post_route') }}">
+						{% if target_user_info["superuser"] == 1 %}
+							<input type="hidden" name="superuser" value="false">
+							<input type="submit" value="Demote">
+						{% else %}
+							<input type="hidden" name="superuser" value="true">
+							<input type="submit" value="Promote">
+						{% endif %}
+						<input type="hidden" name="user_id" value="{{ target_user_info['user_id'] }}">
+						<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+					</form>
+				</td>
+			</tr>
+			<tr>
+				<th>
+					Active
+				</th>
+				<td>
+					{% if target_user_info["active"] == 1 %}
+						true
+					{% else %}
+						false
+					{% endif %}
+				</td>
+				<td>
+					<form method="POST" action="{{ url_for('set_user_active_post_route') }}">
+						{% if target_user_info["active"] == 1 %}
+							<input type="hidden" name="active" value="false">
+							<input type="submit" value="Deactivate">
+						{% else %}
+							<input type="hidden" name="active" value="true">
+							<input type="submit" value="Activate">
+						{% endif %}
+						<input type="hidden" name="user_id" value="{{ target_user_info['user_id'] }}">
+						<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+					</form>
+				</td>
+			</tr>
+			<tr>
+				<th>
+					Locked
+				</th>
+				<td>
+					{% if target_user_info["locked"] == 1 %}
+						true
+					{% else %}
+						false
+					{% endif %}
+				</td>
+				<td>
+					{% if target_user_info["locked"] == 1 %}
+						<form method="POST" action="{{ url_for('unlock_user_post_route') }}">
+							<input type="submit" value="Unlock">
+							<input type="hidden" name="user_id" value="{{ target_user_info['user_id'] }}">
+							<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+						</form>
+					{% endif %}
+				</td>
+			</tr>
+			<tr>
+				<th>
+					Services
+				</th>
+				<td>
+				</td>
+			</tr>
+			{% for service in service_memberships %}
+				<tr>
+					<td>
+					</td>
+					<td>
+						<a href="{{ url_for('service_route', service_id=service['service_id']) }}">{{ service["username"] }}</a>
+					</td>
+					<td>
+						<form method="POST" action="{{ url_for('remove_user_from_service_post_route') }}">
+							<input type="hidden" name="user_id" value="{{ target_user_info['user_id'] }}">
+							<input type="hidden" name="service_id" value="{{ service['service_id'] }}">
+							<input type="hidden" name="next_url" value="{{ url_for('user_route', user_id=target_user_info['user_id']) }}">
+							<input type="submit" value="Remove">
+							<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+						</form>
+					</td>
+				</tr>
+			{% endfor %}
+			{% for service in services %}
+				{% if service not in service_memberships %}
+					<tr>
+						<td>
+						</td>
+						<td>
+							<a href="{{ url_for('service_route', service_id=service['service_id']) }}">{{ service["username"] }}</a>
+						</td>
+						<td>
+							<form method="POST" action="{{ url_for('add_user_to_service_post_route') }}">
+								<input type="hidden" name="user_id" value="{{ target_user_info['user_id'] }}">
+								<input type="hidden" name="service_id" value="{{ service['service_id'] }}">
+								<input type="hidden" name="next_url" value="{{ url_for('user_route', user_id=target_user_info['user_id']) }}">
+								<input type="submit" value="Add">
+								<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+							</form>
+						</td>
+					</tr>
+				{% endif %}
+			{% endfor %}
+			<tr>
+				<th>
+					Groups
+				</th>
+				<td>
+				</td>
+			</tr>
+			{% for group in group_memberships %}
+				<tr>
+					<td>
+					</td>
+					<td>
+						<a href="{{ url_for('group_route', group_id=group['group_id']) }}">{{ group["username"] }}</a>
+					</td>
+					<td>
+						<form method="POST" action="{{ url_for('remove_user_from_group_post_route') }}">
+							<input type="hidden" name="user_id" value="{{ target_user_info['user_id'] }}">
+							<input type="hidden" name="group_id" value="{{ group['group_id'] }}">
+							<input type="hidden" name="next_url" value="{{ url_for('user_route', user_id=target_user_info['user_id']) }}">
+							<input type="submit" value="Remove">
+							<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+						</form>
+					</td>
+				</tr>
+			{% endfor %}
+			{% for group in groups %}
+				{% if group not in group_memberships %}
+					<tr>
+						<td>
+						</td>
+						<td>
+							<a href="{{ url_for('group_route', group_id=group['group_id']) }}">{{ group["username"] }}</a>
+						</td>
+						<td>
+							<form method="POST" action="{{ url_for('add_user_to_group_post_route') }}">
+								<input type="hidden" name="user_id" value="{{ target_user_info['user_id'] }}">
+								<input type="hidden" name="group_id" value="{{ group['group_id'] }}">
+								<input type="hidden" name="next_url" value="{{ url_for('user_route', user_id=target_user_info['user_id']) }}">
+								<input type="submit" value="Add">
+								<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+							</form>
+						</td>
+					</tr>
+				{% endif %}
+			{% endfor %}
+		</tbody>
+	</table>
+	<div class="collapsible">
+		<label for="collapsible-checkbox-user-{{ target_user_info['user_id'] }}">
+			Delete User
+		</label>
+		<input type="checkbox" id="collapsible-checkbox-user-{{ target_user_info['user_id'] }}">
+		<div>
+			Are you sure? This cannot be undone.
+			<form method="POST" action="{{ url_for('delete_user_post_route') }}">
+				<input type="hidden" name="user_id" value="{{ target_user_info['user_id'] }}">
+				<input type="submit" value="Confirm Delete User">
+				<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+			</form>
+		</div>
+	</div>
+{% endblock %}

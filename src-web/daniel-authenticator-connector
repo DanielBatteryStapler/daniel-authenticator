@@ -1,0 +1,54 @@
+#!/bin/bash
+
+#exit if any commands have errors
+set -e
+
+echo "Hello from daniel-authenticator-connector!"
+
+if [[ -z "${DANIEL_AUTHENTICATOR_DECLARATIVE_DATABASE}" ]]; then
+	echo "Using persistent database at ./data/daniel-authenticator.sqlite3"
+else
+	echo "Using declarative database."
+	#delete temporary database if it exists
+	[ ! -e "/tmp/daniel-authenticator-declarative-database.sqlite3" ] || rm "/tmp/daniel-authenticator-declarative-database.sqlite3"
+	#there might not be a volume mounted for the data folder, which is fine because it's temporary anyways, so just create it
+	[ ! -e "/data" ] && mkdir "/data"
+	echo "Intializing declarative database as specified by environment variable"
+	#just run all of the declaratiave database lines as arguments to the cli program
+	while IFS= read -r line; do
+		echo "$line" | xargs -t daniel-authenticator-cli
+	done <<< "${DANIEL_AUTHENTICATOR_DECLARATIVE_DATABASE}"
+fi
+
+echo "Generating self-signed TLS key for LDAPS"
+openssl req -newkey rsa:2048 -nodes -keyout ./data/key.pem -x509 -days 999999 -out ./data/certificate.pem -subj "/C=NA/ST=NA/L=NA/O=NA/OU=NA/CN=daniel-authenticator/emailAddress=NA"
+
+echo "Starting ldap-backend"
+daniel-authenticator-ldap &> >(tee -a ./data/ldap.log) &
+LDAP_PID=$!
+
+echo "Starting ldap-proxy-backend"
+gunicorn -w 4 -b 127.0.0.1:25565 "daniel_authenticator_web:create_ldap_app()" &> >(tee -a ./data/ldap_web.log) &
+LDAP_PROXY_PID=$!
+
+echo "Starting web-frontend"
+gunicorn -w 4 -b 0.0.0.0:8080 "daniel_authenticator_web:create_interface_app()" &> >(tee -a ./data/web.log) &
+INTERFACE_PID=$!
+
+echo "Daniel-Authenticator is running!"
+
+cleanup() {
+  kill $LDAP_PID
+  kill $LDAP_PROXY_PID
+  kill $INTERFACE_PID
+  wait $LDAP_PID
+  wait $LDAP_PROXY_PID
+  wait $INTERFACE_PID
+  echo "Goodbye from daniel-authenticator-connector"
+}
+
+trap cleanup EXIT
+
+sleep infinity
+
+

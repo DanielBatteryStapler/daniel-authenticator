@@ -1,0 +1,38 @@
+version: "3.3"
+
+services:
+  daniel-authenticator:
+    restart: unless-stopped
+    tty: true
+    stdin_open: true
+    container_name: daniel-authenticator
+    image: danielbatterystapler/daniel-authenticator
+    environment:
+      DANIEL_AUTHENTICATOR_SECRET_KEY: "thishouldbeaverysecretrandomseriesofcharacters"
+#https://yaml-multiline.info/
+      DANIEL_AUTHENTICATOR_DECLARATIVE_DATABASE: |
+        create_user john "John Admin" johnsmith@example.com secret_password_john
+        set_user_uuid john 75e50c72-2801-4c1d-ab3c-2f77fed25d10
+        superuser john
+        
+        create_user mark "Mark User" markuser@example.com secret_password_mark
+        set_user_uuid mark 891801a2-d162-4900-96ea-77c15c30a864
+        
+        create_group admins "Admins Group"
+        set_group_uuid admins 2bad64cc-fc0b-4608-9e36-dc95f3b27ea6
+        add_user_to_group john admins
+        
+        create_service admin_service "Service for Admins" "https://example.com/admin_service" secret_password_admin
+        add_user_to_service john admin_service
+        
+        create_service user_service "Service for Users" "https://example.com/user_service" secret_password_user
+        add_user_to_service john user_service
+        add_user_to_service mark user_service
+        add_group_to_service admins user_service
+        
+        
+    ports:
+      - 8080:8080
+#you shouldn't expose 3389(unencrypted) or 6636(self-signed cert) because they are insecure
+#don't let outside services access them!
+#you should also put a reverse proxy in front of this service too and not expose 8080 directly because it's insecure(HTTP) as well
